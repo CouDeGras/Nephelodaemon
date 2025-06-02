@@ -1,0 +1,793 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thymoeidolon</title>
+  <style>
+    /* ----------  THEME  ---------- */
+    @font-face {
+      font-family: 'CustomFont';
+      src: url('/font.ttf') format('truetype');
+    }
+
+    :root {
+      --primary-color: #e4c1f9;
+      --background-color: #080808;
+      --surface-color: #1c1c1c;
+      --text-color: #e0e0e0;
+      --secondary-text-color: #a0a0a0;
+      --input-background: #2c2c2c;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'CustomFont','Effra Trial','Ubuntu', 'Open Sans', sans-serif
+    }
+
+    body {
+      margin: 0;
+      background: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6
+    }
+
+    h2,
+    h3 {
+      color: var(--primary-color);
+      margin: 32px 0 8px;
+      font-weight: 2400
+    }
+
+    h3 {
+      margin-top: 0
+    }
+
+    #container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 24px
+    }
+
+    /* ----------  HEADER  ---------- */
+    .header-bar {
+      background: #1c1c1c;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      text-align: center;
+      padding: 16px;
+      white-space: nowrap
+    }
+
+    .header-bar h3,
+    .header-bar span {
+      display: inline;
+      margin: 0;
+      padding: 0
+    }
+
+    /* ----------  INPUTS  ---------- */
+    input[type=text],
+    input[type=password],
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 16px;
+      background: var(--input-background);
+      color: var(--text-color);
+      font-size: 16px
+    }
+
+    input::placeholder {
+      color: var(--secondary-text-color)
+    }
+
+    input[type=submit],
+    .btn {
+      width: 100%;
+      padding: 14px 20px;
+      margin: 24px 0;
+      border: none;
+      border-radius: 16px;
+      background: var(--primary-color);
+      color: #2c2c2c;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: .3s
+    }
+
+    input[type=submit]:hover,
+    .btn:hover {
+      background: #7c4dff;
+      color: #fff
+    }
+
+    /* ----------  SLIDER  ---------- */
+    .range-wrap {
+      position: relative;
+      width: 100%
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      margin: 8px 0;
+      background: #2c2c2c;
+      border-radius: 16px;
+      outline: none
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      cursor: pointer;
+      transition: .3s
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      background: #7c4dff
+    }
+
+    .range-val {
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary-color);
+      color: #2c2c2c;
+      font-size: 14px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 5px
+    }
+
+    /* ----------  FIELD GROUPS  ---------- */
+    .section {
+      border: 1px solid var(--primary-color);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 20px;
+      background: var(--surface-color)
+    }
+
+    .row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap
+    }
+
+    .row .field {
+      flex: 1 1 100%
+    }
+
+    /* stacks on mobile */
+    @media(min-width:480px) {
+      .row .field {
+        flex: 1
+      }
+    }
+
+    /* side-by-side on wide */
+    label {
+      display: block;
+      margin: 12px 0 4px;
+      font-weight: 600
+    }
+
+    /* ----------  INFO BOX  ---------- */
+    .info-box {
+      background: var(--surface-color);
+      border-left: 4px solid var(--primary-color);
+      padding: 12px;
+      border-radius: 16px;
+      margin: 24px 0;
+      text-align: left
+    }
+
+    .warning {
+      font-size: 14px;
+      color: var(--secondary-text-color);
+      text-align: left !important;
+    }
+
+    /* ── Enhanced range track ── */
+    input[type="range"] {
+      transition: opacity 0.2s;
+    }
+
+    input[type="range"]:hover {
+      opacity: 1;
+    }
+
+    /* WebKit track */
+    input[type="range"]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 16px;
+      background: var(--surface-color);
+      transition: background-color 0.3s;
+    }
+
+    input[type="range"]:hover::-webkit-slider-runnable-track {
+      background: var(--primary-color);
+    }
+
+    /* Mozilla track */
+    input[type="range"]::-moz-range-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 16px;
+      background: var(--surface-color);
+      transition: background-color 0.3s;
+    }
+
+    input[type="range"]:hover::-moz-range-track {
+      background: var(--primary-color);
+    }
+
+    /* IE/Edge track */
+    input[type="range"]::-ms-track {
+      width: 100%;
+      height: 8px;
+      background: transparent;
+      border-color: transparent;
+      color: transparent;
+    }
+
+    input[type="range"]::-ms-fill-lower {
+      background: var(--surface-color);
+      border-radius: 16px;
+      transition: background-color 0.3s;
+    }
+
+    input[type="range"]::-ms-fill-upper {
+      background: var(--surface-color);
+      border-radius: 16px;
+    }
+
+    input[type="range"]:hover::-ms-fill-lower {
+      background: var(--primary-color);
+    }
+
+    /* ── Enhanced thumbs ── */
+    /* WebKit thumb */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background-color: #7C4DFF;
+    }
+
+    /* Mozilla thumb */
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      background-color: #7C4DFF;
+    }
+
+    /* IE/Edge thumb */
+    input[type="range"]::-ms-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    input[type="range"]::-ms-thumb:hover {
+      transform: scale(1.2);
+      background-color: #7C4DFF;
+    }
+
+    .range-val {
+      position: absolute;
+      top: -25px;
+      /* remove any left/X offset here — we’ll drive it from JS */
+      left: 0;
+      /* center the bubble over its “left” point */
+      transform: translateX(0%);
+      background-color: var(--primary-color);
+      color: #2C2C2C;
+      font-size: 14px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 5px;
+      pointer-events: none;
+      transition: left 0.2s;
+    }
+
+    .contenador {
+      display: flex;
+      justify-content: space-between;
+      /* pushes first to start, last to end, middle centered */
+      align-items: center;
+      /* vertically center if container has height */
+      /* gap: 1rem;  optional spacing between them in addition to the space-between */
+    }
+
+    /* ── Leaflets ─────────────────────────────── */
+    .leaflet {
+      display: none;
+    }
+
+    .leaflet.active {
+      display: block;
+    }
+
+    /* ── Tabs (SVGs) ──────────────────────────── */
+    /* ── Tabs ──────────────────────────── */
+    .tab {
+      cursor: pointer;
+      color: var(--primary-color);
+      transition: color .25s, transform .25s;
+    }
+
+    .tab:hover {
+      color: #7C4DFF;
+    }
+
+    /* Electric-violet highlight for the selected icon */
+    .tab.active {
+      color: #7C4DFF;
+      transform: scale(1.15);
+    }
+
+    /* ── Data-Display Values ───────────────── */
+    .data-display .data-value {
+      margin-top: 4px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-align: left;
+      /* aligns numbers neatly */
+      line-height: 1.2;
+    }
+
+    @media(min-width:480px) {
+      .data-display .field {
+        /* show two per row on tablet */
+        flex: 1 1 45%;
+      }
+    }
+
+    .info-box {
+      background-color: var(--surface-color);
+      border-left: 4px solid var(--primary-color);
+      padding: 12px;
+      margin: 4px 0;
+      border-radius: 16px;
+      text-align: left;
+    }
+
+    .info-box h3 {
+      text-align: center;
+      /* Center the heading */
+      margin: 8px;
+      /* Optional: Adjust margins to align well within the box */
+    }
+
+    .info-box p {
+      text-align: left;
+      /* Left-align the paragraph */
+      margin: 4px;
+      /* Optional: Reset default margins for cleaner layout */
+    }
+	  /* --- collapsible disclaimer --- */
+#disclaimer {
+  /* re-use the box styling you already have */
+  margin-top: 0;           /* matches the old layout */
+  padding: 12px;
+}
+
+#disclaimer[open] {
+  /* when expanded, nothing changes – keep full padding */
+}
+
+#disclaimer > summary {
+  cursor: pointer;
+  list-style: none;        /* hide the default ▸ arrow */
+  outline: none;           /* remove focus ring (add your own if you like) */
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+#disclaimer > summary::-webkit-details-marker {
+  display: none;           /* hide default marker in WebKit */
+}
+
+/* simple custom marker (rotate on open) */
+#disclaimer summary::before {
+  content: "▶";
+  transition: transform .25s;
+}
+
+#disclaimer[open] summary::before {
+  transform: rotate(90deg); /* ▼ when open */
+}
+/* ── header layout ───────────────────────────────────────────── */
+.header-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;   /* | filler | title | picker | */
+  align-items: center;
+  background: #1c1c1c;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 16px;
+  white-space: nowrap;
+}
+
+/* centre the title inside the middle column */
+.header-bar h3 {
+  grid-column: 2;
+  justify-self: center;
+  margin: 0;
+}
+
+/* right-align the language picker */
+.lang-picker {
+  grid-column: 3;
+  justify-self: end;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 12px;
+  background: var(--surface-color);
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.lang-picker:hover {
+  background: #2c2c2c;
+}
+/* ── shrink the language <select> inside the header ─────────────── */
+.header-bar .lang-picker {
+  width: auto !important;   /* cancel the global 100 % width        */
+  min-width: 68px;          /* keeps all 2-letter codes visible     */
+  text-align: center;       /* optional – centres “EN”, “ES”, …     */
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="header-bar">
+    <h3>::Thymoeidolon::</h3>
+	    <select id="langPicker" class="lang-picker">
+    <option value="en" >English</option>
+    <option value="es">Español</option>
+    <option value="fr">Français</option>
+	<option value="la" selected>Latina</option>
+    <!-- add/remove as you wish -->
+  </select>
+  </div>
+  <div id="container">
+
+    <form id="settingsForm" method="post">
+      <br><br>
+      <div class="section data-display">
+        <div class="contenador">
+          <svg class="tab active" data-target="leaflet-cor" xmlns="http://www.w3.org/2000/svg" width="48" height="48"
+            viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11.246 16.657a1 1 0 0 0 1.508 0l3.57-4.101A2.75 2.75 0 1 0 12 9.168a2.75 2.75 0 1 0-4.324 3.388zM17 3h2a2 2 0 0 1 2 2v2m0 10v2a2 2 0 0 1-2 2h-2M3 7V5a2 2 0 0 1 2-2h2m0 18H5a2 2 0 0 1-2-2v-2" />
+          </svg>
+          <svg class="tab" data-target="leaflet-filter" xmlns="http://www.w3.org/2000/svg" width="48" height="48"
+            viewBox="0 0 24 24">
+            <path fill="currentColor"
+              d="m20.467 8.694l.246-.566a4.36 4.36 0 0 1 2.22-2.25l.759-.339a.53.53 0 0 0 0-.963l-.717-.319a4.37 4.37 0 0 1-2.251-2.326l-.253-.611a.506.506 0 0 0-.942 0l-.253.61a4.37 4.37 0 0 1-2.25 2.327l-.718.32a.53.53 0 0 0 0 .962l.76.338a4.36 4.36 0 0 1 2.219 2.251l.246.566c.18.414.753.414.934 0M2.992 3H14v2H8v14h8V9h2v2h4v9.007a1 1 0 0 1-.992.993H2.992A.993.993 0 0 1 2 20.007V3.993A1 1 0 0 1 2.992 3M4 5v2h2V5zm0 4v2h2V9zm0 4v2h2v-2zm14 0v2h2v-2zM4 17v2h2v-2zm14 0v2h2v-2z" />
+          </svg>
+          <svg class="tab" data-target="leaflet-param" xmlns="http://www.w3.org/2000/svg" width="48" height="48"
+            viewBox="0 0 24 24">
+            <path fill="currentColor"
+              d="M14.5 22q-.625 0-1.062-.437T13 20.5v-5q0-.45.225-.8t.6-.55l.5.975q.1.175.25.275t.35.1q.375 0 .575-.313t.025-.662L15.25 14h1.5l.575 1.125q.1.175.25.275t.35.1q.375 0 .575-.313t.025-.662L18.25 14h1.5l.575 1.125q.1.175.25.275t.35.1q.375 0 .575-.313t.025-.662L21.25 14h.25q.625 0 1.063.437T23 15.5v5q0 .625-.437 1.063T21.5 22zm0-1.5h7V17h-7zm.3-8.575q-.375.2-.775.062t-.6-.512q-.2-.425-.562-.7t-.813-.275q-.625 0-1.062.425t-.438 1.05q0 .45.238.813t.662.562q.375.2.525.588t-.05.762t-.587.525t-.763-.05q-.95-.425-1.487-1.275T8.55 12q0-1.45 1.025-2.475T12.05 8.5q1.05 0 1.913.55t1.287 1.5q.2.375.063.775t-.513.6M10.275 22q-.425 0-.75-.275t-.375-.7l-.3-2.225q-.325-.125-.612-.3t-.563-.375l-1.55.65q-.625.275-1.25.05t-.975-.8l-1.175-2.05q-.35-.575-.2-1.225t.675-1.075l1.325-1Q4.5 12.5 4.5 12.337v-.675q0-.162.025-.337l-1.325-1Q2.675 9.9 2.525 9.25t.2-1.225L3.9 5.975q.35-.575.975-.8t1.25.05l1.55.65q.275-.2.575-.375t.6-.3l.2-1.65q.075-.675.575-1.113T10.8 2h2.4q.675 0 1.175.438t.575 1.112l.2 1.65q.325.125.613.3t.562.375l1.5-.65q.625-.275 1.263-.05t.987.8l1.175 2.05q.35.575.213 1.225t-.663 1.075l-1.15.875q-.35.25-.75.2t-.65-.4t-.187-.75t.387-.65l.975-.75l-.975-1.7l-2.475 1.05q-.55-.575-1.212-.962t-1.438-.588L13 4h-1.975l-.35 2.65q-.775.2-1.437.588t-1.213.937L5.55 7.15l-.975 1.7l2.15 1.6q-.125.375-.175.75t-.05.8q0 .4.05.775t.175.75l-2.15 1.625l.975 1.7l2.475-1.05q.6.625 1.35 1.05T11 17.4v3.75q0 .35-.2.6t-.525.25m1.75-10.025" />
+          </svg>
+          <svg class="tab" data-target="leaflet-info" xmlns="http://www.w3.org/2000/svg" width="48" height="48"
+            viewBox="0 0 24 24">
+            <path fill="currentColor"
+              d="M9 19.4q-2.025-.8-3.338-2.512T4.076 13H6.1q.225 1.325.975 2.425T9 17.2zm3.5 2.6q-.625 0-1.062-.437T11 20.5v-6q0-.625.438-1.062T12.5 13h2.2q.375 0 .713.175t.537.5l.55.825h4q.625 0 1.063.438T22 16v4.5q0 .625-.437 1.063T20.5 22zm-9-11q-.625 0-1.062-.437T2 9.5v-6q0-.625.438-1.062T3.5 2h2.2q.375 0 .713.175t.537.5l.55.825h4q.625 0 1.063.438T13 5v4.5q0 .625-.437 1.063T11.5 11zM18 12q0-1.625-.8-3.012T15 6.8V4.6q2.275.925 3.638 2.938T20 12zm-5 8h7v-3.5h-4.575l-1-1.5H13zM4 9h7V5.5H6.425l-1-1.5H4zm9 11v-5zM4 9V4z" />
+          </svg>
+        </div>
+      </div>
+      <div id="leaflet-cor" class="leaflet active">
+        <!-- ───── 6. DATA OVERVIEW ───── -->
+        <h2>Actualized Data</h2>
+        <div class="section data-display">
+          <div class="row">
+            <div class="field">
+              <label>Heart Rate</label>
+              <div class="data-value">84 bpm</div>
+            </div>
+            <div class="field">
+              <label>Respiratory Rate</label>
+              <div class="data-value">22 bpm</div>
+            </div>
+          </div>
+        </div>
+        <h2>Remote Shutter Trigger</h2>
+        <div class="section data-display">
+          <div class="field"><label for="grain">Trigger Delay (sec)</label>
+            <div class="range-wrap"><input id="trg" name="trigger_delay" type="range" min="0" max="15" value="0">
+              <div class="range-val" id="trg_val">0</div>
+            </div><input type="submit" value="Trigger">
+          </div>
+        </div>
+      </div>
+      <div id="leaflet-param" class="leaflet">
+        <!-- ───── 1. NETWORK ───── -->
+        <h2>Hotspot</h2>
+        <div class="section">
+          <div class="row">
+            <div class="field"><label for="ssid">SSID</label><input id="ssid" name="ssid" type="text"
+                placeholder="Cam-Trigger-24G"></div>
+            <div class="field"><label for="pass">Passphrase</label><input id="pass" name="passphrase" type="password"
+                placeholder="********"></div>
+          </div>
+
+        </div>
+
+        <!-- ───── 2. SHUTTER / FLASH ───── -->
+        <h2>Shutter &amp; Flash</h2>
+        <div class="section">
+          <div class="row">
+            <div class="field"><label for="delay">Shutter Delay (ms)</label><input id="delay" name="shutter_delay_ms"
+                type="text" placeholder="100"></div>
+            <div class="field"><label for="debounce">Debounce (ms)</label><input id="debounce" name="debounce_ms"
+                type="text" placeholder="300"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="flashmode">Flash Mode</label>
+              <select id="flashmode" name="flash_mode">
+                <option value="off">Off</option>
+                <option value="pre">Pre-Flash</option>
+                <option value="post">Post-Flash</option>
+              </select>
+            </div>
+            <div class="field"><label for="flashdur">Flash Duration (ms)</label><input id="flashdur"
+                name="flash_duration_ms" type="text" placeholder="50"></div>
+          </div>
+
+        </div>
+
+        <!-- ───── 3. EXPOSURE / CAPTURE ───── -->
+        <h2>Exposure &amp; Capture</h2>
+        <div class="section">
+          <div class="row">
+            <div class="field"><label for="iso">ISO</label><input id="iso" name="iso" type="text" placeholder="100-800">
+            </div>
+            <div class="field"><label for="ss">Shutter Speed (s)</label><input id="ss" name="shutter_speed" type="text"
+                placeholder="0.01 for 1/100"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="wb">White Balance</label>
+              <select id="wb" name="white_balance">
+                <option value="auto">Auto</option>
+                <option value="daylight">Daylight</option>
+                <option value="tungsten">Tungsten</option>
+                <option value="custom">Custom (K)</option>
+              </select>
+            </div>
+            <div class="field"><label for="res">Resolution</label>
+              <select id="res" name="resolution">
+                <option value="8mp">8 MP (3264×2448)</option>
+                <option value="12mp">12 MP (4000×3000)</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ───── 4. LUT / OVERLAY ───── -->
+        <h2>Postprocessing</h2>
+        <div class="section">
+          <div class="row">
+            <div class="field"><label for="gr">Gaussian Grain</label>
+              <select id="gr" name="gr">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+              </select>
+            </div>
+            <div class="field"><label for="grain">Grain Amount (%)</label>
+              <div class="range-wrap"><input id="grain" name="grain_amount" type="range" min="0" max="30" value="15">
+                <div class="range-val" id="grain_val">15</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="hrtoggle">Overlay Heart-Rate</label>
+              <select id="hrtoggle" name="overlay_hr">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+              </select>
+            </div>
+            <div class="field"><label for="pos">Overlay Position</label>
+              <select id="pos" name="overlay_position">
+                <option value="tl">Chest</option>
+                <option value="br">Bottom-Right</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="fontsize">Font Size (px)</label><input id="fontsize" name="font_size"
+                type="text" placeholder="48"></div>
+            <div class="field"><label for="fontcolor">Font Color (hex)</label><input id="fontcolor" name="font_color"
+                type="text" placeholder="#FFFFFF"></div>
+          </div>
+        </div>
+
+        <!-- ───── 5. ACTIONS ───── -->
+        <h2>Actions</h2>
+        <input type="submit" value="Save Settings & Reboot">
+    </form>
+  </div>
+
+  <div id="leaflet-info" class="leaflet">
+    <div class="content">
+
+    <h2>File Browser</h2>
+    <button type="button" class="btn service-btn" id="btn-fb">
+      Open File Browser (8080)
+    </button>
+
+      <h2>ttyd</h2>
+      <button type="button" class="btn service-btn" id="btn-ttyd">
+        Open ttyd (7681)
+      </button>
+    </div>
+  </div>
+	  
+<h2>Exclusio Responsabilitatis</h2>
+<details id="disclaimer" class="info-box">
+
+  <h3>Exclusio Responsabilitatis pro Aestimatione Prototypi Machinae Camerae Raspberry Pi</h3>
+
+  <p>Hic prototypus machinae photographicae Raspberry Pi solum ad aestimationem et probationem praebetur, nec ad redistributionem, usum commercialem aut in ambitus operationales adhibendum. Agnoscas quaeso sequentia:</p>
+
+  <p><strong>1. Certificatio Componentium:</strong><br>
+    Singuli huius prototypi componentēs certificationes (e.g., CE) a suis fabricatoribus habere possunt. Nihilominus totum systema—with integratione, connexionibus, custodia et programmatibus—ut productum ultimatum certificatum aut formaliter probatum non est.</p>
+
+  <p><strong>2. Conformitas Regulativa:</strong><br>
+    Hic prototypus non est aestimatus nec certificatus sub normis UKCA, RoHS, FCC nec ullis aliis regulativis. Praebetur “sicut est” et fortasse non observat regulas de securitate, privacitate aut protectione ambientali applicandas ad producta definitiva.</p>
+
+  <p><strong>3. Functiones Fundamentales:</strong><br>
+    Nulla fides datur de stabilitate aut operatione fundamentali huius machinae. Machina fortasse incorrecte aut inconsistenter operatur, nec in officiis criticis vel applicationibus sensitis inniti debetis.</p>
+
+  <p><strong>4. Privacitas et Securitas:</strong><br>
+    Hoc prototypum nullam praestat expectationem privacitatis. Utentes plenam responsabilitatem accipere debent pro tutela et securitate datarum. Fabricator se eximit ab ulla responsabilitate propter accessus non autorizatos, violationes datarum aut amissionem privacitatis ex usu prototypi.</p>
+
+  <p><strong>5. Securitas Electrica:</strong><br>
+    Securitas electrica huius machinae plene aestimata aut comprobata non est. Utentes plenam responsabilitatem ponere debent pro aestimandis et mitigandis periculis electricis, inter ictum electricum, circuitus breves, pericula ignis vel damna instrumentorum.</p>
+
+  <p><strong>6. Connexio Retis:</strong><br>
+    Si haec machina connexionem retis (e.g., Wi-Fi aut Ethernet) habet, nexus vel data inopinato patefacere potest. Utentes curram securitatis retis praestare et machinam in ambitus moderatos uti debent, ut pericula minuantur.</p>
+
+  <p><strong>7. Conditiones Ambientales:</strong><br>
+    Hic prototypus solum ad ambitus interiores moderatos destinatur nec probatus est contra temperaturas extremas, humorem, umiditatem, pulverem aut alia pericula ambientalia. Usus extra has condiciones potest efficere malfunctionem vel damnum machinae.</p>
+
+  <p><strong>8. Proprietas Intellectualis:</strong><br>
+    Hic prototypus necnon consilia programmatum et hardware proprietatem intellectualem constituunt. Per aestimationem huius machinae, utentes se obligant ne reverse-engineering, replicationem, modificationem aut redistributionem sine expresso scripti fabricatoris permissione faciunt.</p>
+
+  <p><strong>9. Limitatio Auxilii Technici:</strong><br>
+    Nullum subsidium technicum continuatum, warrantia, manutentio aut renovationes praebentur aut implicantur. Licet feedback peti possit, fabricator non tenetur quaestiones aut vitia solvendi.</p>
+
+  <p><strong>10. Renuntiatio Responsabilitatis:</strong><br>
+    Per acceptationem et usum huius prototypi, vos omnibus actionibus adversus fabricatorem ob functionem, securitatem, privacitatem, conformitatem aut difficultates in perficiendo renuntiare explicitum est. Machina praebetur “sicut est”, sine ullis warrantiis, expressis vel implicitis, inter mercatilitatem, aptitudinem ad scopum particularem aut non-infractio iurium.</p>
+
+</details>
+
+
+  <p class="warning" style="text-align:center;margin-bottom:40px">
+© MMXXV Iosue Adephonsus<br><br>
+Systemata thaumaturgica et liturgica applicata<br>
+Projectum Thymoeidolon<br><br>
+In Regno Unito designatum<br>
+Ad aestimationem prototypi solum<br>
+  </p>
+
+  <script>
+    // Grab current host once
+    const host = window.location.hostname;
+
+    // Map buttons to ports and bind click handlers
+    const services = [
+      { id: 'btn-ttyd', port: 7681 },
+      { id: 'btn-fb', port: 8080 }
+    ];
+
+    services.forEach(({ id, port }) => {
+      const btn = document.getElementById(id);
+      btn.addEventListener('click', () => {
+        window.open(`http://${host}:${port}`, '_blank');
+      });
+    });
+
+    // Slider read-out
+    document.querySelectorAll('input[type="range"]').forEach(slider => {
+      const bubble = document.getElementById(`${slider.id}_val`);
+      if (!bubble) return;  // ignore sliders without a read-out
+      const update = () => {
+        bubble.textContent = slider.value;
+        const pct = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+        bubble.style.left = `calc(${pct}% - 10px)`;
+      };
+      slider.addEventListener('input', update);
+      update();  // initialize on load
+    });
+
+    // Form handler
+    document.getElementById('settingsForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const data = {};
+      new FormData(e.target).forEach((v, k) => data[k] = v);
+      data.device_time = Date.now();
+      fetch('/setting', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'       // new
+        },
+
+        body: JSON.stringify(data)
+      })
+        .then(async r => {
+          const raw = await r.text();               // read *whatever* comes back
+          try {
+            const j = JSON.parse(raw);              // try to turn it into JSON
+            alert(j.success ? 'Saved!' : 'Error: ' + j.message);
+          } catch (e) {                             // falls here if it wasn’t JSON
+            console.error('Non-JSON response:', raw);
+            alert('Server response:\n' + raw);      // show the text/HTML instead
+          }
+        })
+        .catch(err => alert('Fetch error ' + err));
+
+    });
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.target;              // which leaflet?
+
+        // show the right leaflet
+        document.querySelectorAll('.leaflet').forEach(lf =>
+          lf.classList.toggle('active', lf.id === target));
+
+        // update tab highlight
+        document.querySelectorAll('.tab').forEach(tb =>
+          tb.classList.toggle('active', tb === tab));
+      });
+    });
+  </script>
+
+</body>
+
+</html>
