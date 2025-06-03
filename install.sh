@@ -214,7 +214,7 @@ IP_ADDR=$(hostname -I | awk '{print $1}')
 # ─────────────────────────────────────────────────────────────
 configure_backend_service() {
   local SERVICE=/etc/systemd/system/thymoeidolon-backend.service
-  local WORKDIR="$SCRIPT_DIR/Thymoeidolon"
+  local WORKDIR="$SCRIPT_DIR"
   local PY=$(command -v python3 || true)
 
   [[ -x $PY ]] || { echo "🔧 Installing python3 …"; apt_install python3; PY=$(command -v python3); }
@@ -244,7 +244,7 @@ EOF
 #  B) NGINX vhost that fronts the backend and static assets
 # ─────────────────────────────────────────────────────────────
 configure_nginx_front() {
-  local REPO_STATIC="$SCRIPT_DIR/Thymoeidolon/nginx"   # must contain index.html
+  local REPO_STATIC="$SCRIPT_DIR/nginx"   # must contain index.html
   local VHOST="/etc/nginx/conf.d/thymoeidolon.conf"
 
   [[ -d $REPO_STATIC ]] || {
