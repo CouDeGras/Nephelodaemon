@@ -11,6 +11,8 @@
 set -Eeuo pipefail
 trap 'echo "❌ Error on line $LINENO – exiting.";' ERR
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # ───────────────────────────────────
 # 0) pre-flight checks
 # ───────────────────────────────────
@@ -212,7 +214,7 @@ IP_ADDR=$(hostname -I | awk '{print $1}')
 # ─────────────────────────────────────────────────────────────
 configure_backend_service() {
   local SERVICE=/etc/systemd/system/thymoeidolon-backend.service
-  local WORKDIR="$USER_HOME/Thymoeidolon"
+  local WORKDIR="$SCRIPT_DIR/Thymoeidolon"
   local PY=$(command -v python3 || true)
 
   [[ -x $PY ]] || { echo "🔧 Installing python3 …"; apt_install python3; PY=$(command -v python3); }
@@ -242,7 +244,7 @@ EOF
 #  B) NGINX vhost that fronts the backend and static assets
 # ─────────────────────────────────────────────────────────────
 configure_nginx_front() {
-  local REPO_STATIC="$USER_HOME/Thymoeidolon/nginx"   # must contain index.html
+  local REPO_STATIC="$SCRIPT_DIR/Thymoeidolon/nginx"   # must contain index.html
   local VHOST="/etc/nginx/conf.d/thymoeidolon.conf"
 
   [[ -d $REPO_STATIC ]] || {
