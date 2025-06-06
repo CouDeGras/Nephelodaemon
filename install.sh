@@ -6,7 +6,7 @@
 #   – NGINX from official repo
 #   – Samba shares for $HOME and DCIM
 #
-# Run as root on Ubuntu **or Linux Mint**.
+# Run once with sudo on Ubuntu **or Linux Mint**.
 
 set -Eeuo pipefail
 trap 'echo "❌ Error on line $LINENO – exiting.";' ERR
@@ -33,19 +33,27 @@ CODENAME=${UBUNTU_CODENAME:-$VERSION_CODENAME}
 export PATH="$PATH:/snap/bin"
 
 # ───────────────────────────────────
-# 1) resolve real non-root user + paths
+# 1) resolve real non-root user + impersonate them
 # ───────────────────────────────────
-USER_NAME=${SUDO_USER:-$USER}
+USER_NAME=${SUDO_USER:-$USER}                     # who invoked sudo
 USER_HOME=$(getent passwd "$USER_NAME" | cut -d: -f6)
+
+# Make all child-processes think they’re that user
+export HOME="$USER_HOME"
+export USER="$USER_NAME"
+
 BASE_DIR="$USER_HOME/DCIM"
 
-# create DCIM structure (idempotent)
+# Create DCIM structure (idempotent) and hand ownership back
 for sub in original processed meta; do
   dir="$BASE_DIR/$sub"
-  [[ -d $dir ]] && echo "⚠️  Already exists: $dir" || {
+  if [[ -d $dir ]]; then
+    echo "⚠️  Already exists: $dir"
+  else
     mkdir -p "$dir"
+    chown "$USER_NAME":"$USER_NAME" "$dir"
     echo "✅ Created: $dir"
-  }
+  fi
 done
 echo "📁 DCIM folder ready at $BASE_DIR"
 
@@ -77,7 +85,12 @@ install_ttyd() {
 
 install_filebrowser() {
   echo "🔧 Ensuring File Browser…"
-  need_cmd filebrowser || curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
+  if ! need_cmd filebrowser; then
+    # Run the official installer as the real user so its cache & DB land
+    # in ~/.config instead of /root/.config
+    sudo -u "$USER_NAME" -E bash -c \
+      'curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash'
+  fi
 }
 
 install_cli_prereqs() {
@@ -92,7 +105,6 @@ install_nginx() {
   # Install only if the binary is missing
   need_cmd nginx || apt_install nginx
 }
-
 
 # ───────────────────────────────────
 # 4) dependency resolution
@@ -173,9 +185,7 @@ cat >> "$SMB_CONF" <<EOF
    security = user
    map to guest = Bad User
    guest account = nobody
-
-   # ← allow blank (null) passwords so Samba will never prompt
-   null passwords = yes
+   null passwords = yes   # allow blank passwords
 
 [DCIM]
    path = $BASE_DIR
@@ -217,7 +227,11 @@ configure_backend_service() {
   local WORKDIR="$SCRIPT_DIR"
   local PY=$(command -v python3 || true)
 
-  [[ -x $PY ]] || { echo "🔧 Installing python3 …"; apt_install python3; PY=$(command -v python3); }
+  if [[ -z $PY ]]; then
+    echo "🔧 Installing python3 …"
+    apt_install python3
+    PY=$(command -v python3)
+  fi
 
   cat > "$SERVICE" <<EOF
 [Unit]
@@ -250,17 +264,13 @@ configure_nginx_front() {
   [[ -d $REPO_STATIC ]] || {
     echo "❌ $REPO_STATIC not found (needs index.html)"; exit 1; }
 
-  # ── NEW: disable any shipped “default” site on Ubuntu/Mint ──────────────
+  # Disable any shipped “default” site on Ubuntu/Mint
   for f in \
       /etc/nginx/conf.d/default.conf \
       /etc/nginx/sites-enabled/default \
       /etc/nginx/sites-enabled/default.conf; do
-    if [[ -e $f ]]; then
-      echo "👉 Removing vendor default site: $f"
-      rm -f "$f"
-    fi
+    [[ -e $f ]] && { echo "👉 Removing vendor default site: $f"; rm -f "$f"; }
   done
-  # -----------------------------------------------------------------------
 
   cat > "$VHOST" <<'EOF'
 server {
@@ -293,10 +303,16 @@ EOF
   nginx -t && systemctl reload nginx
 }
 
-
 configure_backend_service
 configure_nginx_front
 
+# ───────────────────────────────────
+# 8) final ownership sweep
+# ───────────────────────────────────
+echo "🧹 Restoring ownership of user files…"
+chown -R "$USER_NAME":"$USER_NAME" "$BASE_DIR" "$USER_HOME/.config" 2>/dev/null || true
+
+echo
 echo "🌐 NGINX now serves:"
 echo "      • static  → http://$IP_ADDR/index.html"
 echo "      • backend → http://$IP_ADDR/   (via proxy to :8000)"
